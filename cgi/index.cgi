@@ -26,14 +26,14 @@ if (!Whostmgr::ACLS::hasroot()) {
 	exit();
 }
 
-unless (-e "/usr/local/sbin/maldet") {
-	print "Doesn't look like Linux Malware Detect is installed";
+unless (-e "/usr/local/sbin/hostinglimits") {
+	print "Doesn't look like Linux hostinglimits is installed";
 	exit();
 }
 
 if (-e "/usr/local/cpanel/bin/register_appconfig") {
 	$script = "index.cgi";
-	$versionfile = "/usr/local/cpanel/whostmgr/docroot/cgi/addons/maldet/version.txt";
+	$versionfile = "/usr/local/cpanel/whostmgr/docroot/cgi/addons/hostinglimits/version.txt";
 } else {
         exit();
 }
@@ -53,16 +53,16 @@ defheader("cPanel Malware Detect - maldet v$myv");
 if ($FORM{action} eq "upgrade") {
 	print "Retrieving new maldet package...\n";
 	print "<pre style='font-family: Courier New, Courier; font-size: 12px'>";
-	system ("rm -Rfv /usr/src/cpanel_addon-maldet; cd /usr/src ; git clone https://github.com/steadramon/cpanel_addon-maldet.git 2>&1");
+	system ("rm -Rfv /usr/src/cpanel_addon-hostinglimits; cd /usr/src ; git clone https://github.com/steadramon/cpanel_addon-maldet.git 2>&1");
 	print "</pre>";
-	if (-e "/usr/src/cpanel_addon-maldet/version.txt") {
+	if (-e "/usr/src/cpanel_addon-hostinglimits/version.txt") {
 		print "Installing new version of maldet";
 		print "<pre style='font-family: Courier New, Courier; font-size: 12px'>";
-		system ("cd /usr/src/cpanel_addon-maldet ; ./install 2>&1");
+		system ("cd /usr/src/cpanel_addon-hostinglimits ; ./install 2>&1");
 		print "</pre>";
 		print "Tidying up...\n";
 		print "<pre style='font-family: Courier New, Courier; font-size: 12px'>";
-		system ("rm -Rfv /usr/src/cpanel_addon-maldet");
+		system ("rm -Rfv /usr/src/cpanel_addon-hostinglimits");
 		print "</pre>";
 		print "...All done.\n";
 	}
@@ -176,7 +176,7 @@ sub index {
 
 ###############################################################################
 sub lmd_config {
-        sysopen (IN, "/usr/local/maldetect/$FORM{template}", O_RDWR | O_CREAT);
+        sysopen (IN, "/usr/local/hostinglimits/$FORM{template}", O_RDWR | O_CREAT);
         flock (IN, LOCK_SH);
         my @confdata = <IN>;
         close (IN);
@@ -203,7 +203,7 @@ sub lmd_config {
 sub savelmd_config {
 
         $FORM{formdata} =~ s/\r//g;
-        sysopen (OUT, "/usr/local/maldetect/$FORM{template}", O_WRONLY | O_CREAT);
+        sysopen (OUT, "/usr/local/hostinglimits/$FORM{template}", O_WRONLY | O_CREAT);
         flock (OUT, LOCK_EX);
         seek (OUT, 0, 0);
         truncate (OUT, 0);
@@ -222,7 +222,7 @@ sub list_reports {
 
 	my %hash;
 
-	my @reports = `/usr/local/sbin/maldet --report list`;
+	my @reports = `/usr/local/sbin/hostinglimits --report list`;
 	foreach my $line (@reports) {
 		if ($line =~ /TIME: (.+) \| SCAN ID: (.+)/) { 
 			$hash{$2} = $1;			
@@ -251,7 +251,7 @@ sub purge {
 
 	print "Purging temporary files and logs\n";
 	print "<pre style='font-family: Courier New, Courier; font-size: 12px'>";
-        &printcmd("/usr/local/sbin/maldet --purge");
+        &printcmd("/usr/local/sbin/hostinglimits --purge");
         print "</pre>";
        	print "<p align='center'><form action='$script' method='post'><input type='submit' class='input' value='Return'></form></p>\n";
 
@@ -261,11 +261,11 @@ sub update_rules {
 
 	print "Updating LMD\n";
         print "<pre style='font-family: Courier New, Courier; font-size: 12px'>";
-        &printcmd("/usr/local/sbin/maldet --update-ver");
+        &printcmd("/usr/local/sbin/hostinglimits --update-ver");
         print "</pre>";
 	print "Updating ruleset\n";
         print "<pre style='font-family: Courier New, Courier; font-size: 12px'>";
-        &printcmd("/usr/local/sbin/maldet --update");
+        &printcmd("/usr/local/sbin/hostinglimits --update");
         print "</pre>";
         print "<p align='center'><form action='$script' method='post'><input type='submit' class='input' value='Return'></form></p>\n";
 
@@ -273,12 +273,12 @@ sub update_rules {
 
 sub last_report {
 
-	open (IN, "</usr/local/maldetect/sess/session.last") or die $!;
+	open (IN, "</usr/local/hostinglimits/sess/session.last") or die $!;
 	$lastreport = <IN>;
 	close (IN);
 	chomp $lastreport;
 
-        sysopen (IN, "/usr/local/maldetect/sess/session.$lastreport", O_RDWR | O_CREAT);
+        sysopen (IN, "/usr/local/hostinglimits/sess/session.$lastreport", O_RDWR | O_CREAT);
         flock (IN, LOCK_SH);
         my @confdata = <IN>;
         close (IN);
@@ -303,7 +303,7 @@ sub last_report {
 
 sub view_report {
 
-        sysopen (IN, "/usr/local/maldetect/sess/session.$FORM{id}", O_RDWR | O_CREAT);
+        sysopen (IN, "/usr/local/hostinglimits/sess/session.$FORM{id}", O_RDWR | O_CREAT);
         flock (IN, LOCK_SH);
         my @confdata = <IN>;
         close (IN);
@@ -331,12 +331,12 @@ sub scan_user {
 	my (undef,undef,undef,undef,undef,undef,undef,$homedir,undef,undef) = getpwnam($user);
 	$homedir .= "/public_html/";
 	print "Starting scan...<pre>";
-	$tmpDir = '/tmp/malwaredetect';
+	$tmpDir = '/tmp/hostinglimits';
 	if (! -d $tmpDir ) {
 		mkpath($tmpDir, 0, 0077);
 	}
 	chdir $tmpDir;
-	print `/usr/local/sbin/maldet -b -a $homedir`;
+	print `/usr/local/sbin/hostinglimits -b -a $homedir`;
 	print "</pre>";
 	print "<p align='center'><form action='$script' method='post'><input type='submit' class='input' value='Return'></form></p>\n";
 }
