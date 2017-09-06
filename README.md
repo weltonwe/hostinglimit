@@ -1,5 +1,5 @@
-# cpanel_addon-maldet
+# cpanel_addon-hostinglimit
 
-Add Linux Malware Detect (LMD) support to WHM for root users.
+Add Linux hostinglimit support to WHM for root users.
 
 Allows configuration and individual account scanning as well as daily cron setup
