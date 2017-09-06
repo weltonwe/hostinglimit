@@ -33,13 +33,13 @@ if ( $Cpanel::Version::MAJORVERSION < 11.40 ) {
 }
 
 mkdir( "/var/cpanel/addons", 0755 );
-mkdir( "/var/cpanel/addons/maldet", 0700 );
+mkdir( "/var/cpanel/addons/hostinglimit", 0700 );
 
-system '/usr/bin/rsync', '-rlptD', 'bin', '/var/cpanel/addons/maldet/';
+system '/usr/bin/rsync', '-rlptD', 'bin', '/var/cpanel/addons/hostinglimit/';
 
-if (! -e '/usr/local/sbin/maldet') {
-  if (-X "/var/cpanel/addons/maldet/bin/install_lmd") {
-    system '/var/cpanel/addons/maldet/bin/install_lmd';
+if (! -e '/usr/local/sbin/hostinglimit') {
+  if (-X "/var/cpanel/addons/hostinglimit/bin/install_lmd") {
+    system '/var/cpanel/addons/hostinglimit/bin/install_lmd';
     if ($? != 0) {
       print "LMD Install Script Failed?";
       exit(1);
@@ -52,20 +52,20 @@ if (! -e '/usr/local/sbin/maldet') {
   print "LMD installed";
 }
 mkdir( "/usr/local/cpanel/whostmgr/docroot/cgi/addons", 0755 )if !-e "/usr/local/cpanel/whostmgr/docroot/cgi/addons";
-mkdir( "/usr/local/cpanel/whostmgr/docroot/cgi/addons/maldet", 0700 );
+mkdir( "/usr/local/cpanel/whostmgr/docroot/cgi/addons/hostinglimit", 0700 );
 mkdir( "/var/cpanel/apps", 0755 );
 
-install( "-o", "root", "-g", "wheel", "-m" . "0700", "cgi/index.cgi", "/usr/local/cpanel/whostmgr/docroot/cgi/addons/maldet/index.cgi" );
-install( "-o", "root", "-g", "wheel", "-m" . "0700", "version.txt", "/usr/local/cpanel/whostmgr/docroot/cgi/addons/maldet/version.txt" );
-install( "-o", "root", "-g", "wheel", "-m" . "0755", "cron/daily", "/etc/cron.daily/cp-maldet" );
-install( "-o", "root", "-g", "wheel", "-m" . "0644", "lmd.conf/ignore_file_ext", "/usr/local/maldetect/ignore_file_ext" );
+install( "-o", "root", "-g", "wheel", "-m" . "0700", "cgi/index.cgi", "/usr/local/cpanel/whostmgr/docroot/cgi/addons/hostinglimit/index.cgi" );
+install( "-o", "root", "-g", "wheel", "-m" . "0700", "version.txt", "/usr/local/cpanel/whostmgr/docroot/cgi/addons/hostinglimit/version.txt" );
+install( "-o", "root", "-g", "wheel", "-m" . "0755", "cron/daily", "/etc/cron.daily/cp-hostinglimit" );
+install( "-o", "root", "-g", "wheel", "-m" . "0644", "lmd.conf/ignore_file_ext", "/usr/local/hostinglimit/ignore_file_ext" );
 
-system "/usr/local/cpanel/bin/register_appconfig", "appconfig/maldet.conf";
+system "/usr/local/cpanel/bin/register_appconfig", "appconfig/hostinglimit.conf";
 
 mkdir( "/usr/local/cpanel/whostmgr/docroot/addon_plugins", 0755 ) if !-e "/usr/local/cpanel/whostmgr/docroot/addon_plugins";
 install( "-o", "root", "-g", "wheel", "-m" . "0600", "icon/ico-maldet.png", "/usr/local/cpanel/whostmgr/docroot/addon_plugins/ico-maldet.png" );
 
-print "cPanel Linux Malware Detect installed into WHM.\n";
+print "cPanel Linux hostinglimit installed into WHM.\n";
 
 exit(0);
 
