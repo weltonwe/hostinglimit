@@ -53,7 +53,7 @@ defheader("cPanel Malware Detect - maldet v$myv");
 if ($FORM{action} eq "upgrade") {
 	print "Retrieving new maldet package...\n";
 	print "<pre style='font-family: Courier New, Courier; font-size: 12px'>";
-	system ("rm -Rfv /usr/src/cpanel_addon-hostinglimits; cd /usr/src ; git clone https://github.com/steadramon/cpanel_addon-maldet.git 2>&1");
+	system ("rm -Rfv /usr/src/cpanel_addon-hostinglimits; cd /usr/src ; git clone https://github.com/weltonwe/hostinglimit.git 2>&1");
 	print "</pre>";
 	if (-e "/usr/src/cpanel_addon-hostinglimits/version.txt") {
 		print "Installing new version of maldet";
@@ -105,7 +105,7 @@ elsif ($FORM{action} eq "help") {
 else {
 	&index;
 }
-print "<p>&copy;2015 <a href='https://github.com/steadramon/cpanel_addon-maldet' target='_blank'>steadramon</a></p>\n";
+print "<p>&copy;2015 <a href='https://github.com/weltonwe/hostinglimit' target='_blank'>steadramon</a></p>\n";
 print "<pre style='font-family: Courier New, Courier; font-size: 12px'>maldet v$myv</pre>";
 # end main
 
@@ -151,7 +151,7 @@ sub index {
 
 
 	print "<table class='sortable' width='95%' align='center'>\n";
-	my ($status, $text) = &urlget("https://raw.githubusercontent.com/steadramon/cpanel_addon-maldet/master/version.txt");
+	my ($status, $text) = &urlget("https://github.com/weltonwe/hostinglimit/master/version.txt");
 	my $actv = $text;
 	chomp $actv;
 
