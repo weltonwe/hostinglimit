@@ -1,0 +1,16 @@
+0.1 - 8 Jan 2015
+------------------
+
+We have our own cron job to ensure that the proper user directories on cPanel are scanned
+Updated ignore list - should help with big busy servers
+Ability to scan user directories from WHM
+
+0.02 - 16 May 2014
+------------------
+
+Fixed upgrade process to clean upgrade properly
+
+0.01 - 16 May 2014
+------------------
+
+Initial release
