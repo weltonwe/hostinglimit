@@ -5,7 +5,14 @@ MYTMPDIR=$(mktemp -dt "$0")
 trap "rm -rf $MYTMPDIR" EXIT
 
 cd $MYTMPDIR
-wget http://www.rfxn.com/downloads/maldetect-current.tar.gz
-tar xfz maldetect-current.tar.gz
-cd maldetect-*
-./install.sh
+yum install cpulimit
+cd /usr/bin/
+wget https://raw.githubusercontent.com/weltonwe/hostinglimit/master/bin/cpulimit_daemon.sh
+cd /etc/init.d/
+wget https://raw.githubusercontent.com/weltonwe/hostinglimit/master/bin/cpulimit
+chmod 700 /usr/bin/cpulimit_daemon.sh
+chown root:root /etc/init.d/cpulimit
+chmod +x /etc/init.d/cpulimit
+service cpulimit start
+service cpulimit status
+ervice cpulimit restart
